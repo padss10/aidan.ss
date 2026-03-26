@@ -131,34 +131,35 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredItems.map((item) => (
               <div key={item.id} className="glass-card p-5 rounded-2xl hover:shadow-2xl transition-all duration-300 group border-l-4 border-l-blue-500 relative">
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <button 
-                    onClick={() => setEditingItem(item)}
-                    className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
-                    title={t.edit}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => {
-                      if (window.confirm(t.confirmDelete)) {
-                        onDelete(item.id);
-                      }
-                    }}
-                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors shadow-sm"
-                    title={t.delete}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                
                 <div className="flex justify-between items-start mb-3">
                   <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors">
                     <Package className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest pr-16">
-                    {format(item.createdAt, 'dd/MM/yyyy HH:mm')}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                      {format(item.createdAt, 'dd/MM/yyyy HH:mm')}
+                    </span>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setEditingItem(item)}
+                        className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
+                        title={t.edit}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          if (window.confirm(t.confirmDelete)) {
+                            onDelete(item.id);
+                          }
+                        }}
+                        className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors shadow-sm"
+                        title={t.delete}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <h3 className="text-lg font-bold text-blue-900 mb-1">{item.name}</h3>
                 <div className="space-y-2">
