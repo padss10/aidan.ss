@@ -1,0 +1,5 @@
+{
+  "name": "Aidan.SS",
+  "description": "Aplicativo de leitura de código e gerenciamento de estoque",
+  "requestFramePermissions": ["camera"]
+}

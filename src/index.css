@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-background: #ffffff;
+  --color-foreground: #1a365d;
+  --color-primary: #2b6cb0;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #ebf8ff;
+  --color-secondary-foreground: #2c5282;
+  --color-accent: #4299e1;
+  --color-accent-foreground: #ffffff;
+}
+
+body {
+  @apply bg-background text-foreground font-sans min-h-screen;
+  background: linear-gradient(135deg, #ffffff 0%, #ebf8ff 100%);
+  background-attachment: fixed;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
