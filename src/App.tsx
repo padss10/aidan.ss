@@ -2,7 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { 
   Plus, History as HistoryIcon, LayoutDashboard, 
   Scan, Save, X, Package, Tag, Hash, ChevronRight,
-  Languages
+  Languages, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Scanner } from './components/Scanner';
@@ -11,11 +11,13 @@ import { Dashboard } from './components/Dashboard';
 import { InventoryItem, TabType } from './types';
 import { cn } from './lib/utils';
 import { translations, Language } from './lib/translations';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [lang, setLang] = useState<Language>('pt');
   const [newItem, setNewItem] = useState({
     code: '',
@@ -25,53 +27,122 @@ export default function App() {
 
   const t = translations[lang];
 
-  // Load from localStorage for now
+  // Load from Supabase
   useEffect(() => {
-    const saved = localStorage.getItem('aidan_ss_inventory');
-    const savedLang = localStorage.getItem('aidan_ss_lang') as Language;
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse inventory", e);
+    const fetchData = async () => {
+      if (!isSupabaseConfigured || !supabase) {
+        setIsLoading(false);
+        return;
       }
-    }
+
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('inventory_items')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else if (data) {
+        // Map snake_case from DB to camelCase for the app
+        const mappedItems: InventoryItem[] = data.map(item => ({
+          id: item.id,
+          code: item.code,
+          name: item.name,
+          category: item.category,
+          createdAt: item.created_at
+        }));
+        setItems(mappedItems);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+
+    const savedLang = localStorage.getItem('aidan_ss_lang') as Language;
     if (savedLang) {
       setLang(savedLang);
     }
   }, []);
 
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem('aidan_ss_inventory', JSON.stringify(items));
-  }, [items]);
-
   useEffect(() => {
     localStorage.setItem('aidan_ss_lang', lang);
   }, [lang]);
 
-  const handleAddItem = (e?: FormEvent) => {
+  const handleAddItem = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     if (!newItem.code || !newItem.name || !newItem.category) return;
 
-    const item: InventoryItem = {
-      id: crypto.randomUUID(),
-      ...newItem,
-      createdAt: Date.now()
-    };
+    if (!isSupabaseConfigured || !supabase) {
+      alert(lang === 'pt' ? 'Supabase não configurado. Verifique as chaves no painel Secrets.' : 'Supabase not configured. Check keys in the Secrets panel.');
+      return;
+    }
 
-    setItems(prev => [item, ...prev]);
-    setNewItem({ code: '', name: '', category: '' });
-    setIsScanning(false);
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .insert([
+        { 
+          code: newItem.code, 
+          name: newItem.name, 
+          category: newItem.category,
+          created_at: Date.now()
+        }
+      ])
+      .select();
+
+    if (error) {
+      console.error('Error adding item:', error);
+      alert('Error adding item to Supabase');
+    } else if (data) {
+      const item: InventoryItem = {
+        id: data[0].id,
+        code: data[0].code,
+        name: data[0].name,
+        category: data[0].category,
+        createdAt: data[0].created_at
+      };
+      setItems(prev => [item, ...prev]);
+      setNewItem({ code: '', name: '', category: '' });
+      setIsScanning(false);
+    }
   };
 
-  const handleUpdateItem = (updatedItem: InventoryItem) => {
-    setItems(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+  const handleUpdateItem = async (updatedItem: InventoryItem) => {
+    if (!isSupabaseConfigured || !supabase) return;
+
+    const { error } = await supabase
+      .from('inventory_items')
+      .update({
+        code: updatedItem.code,
+        name: updatedItem.name,
+        category: updatedItem.category,
+        created_at: updatedItem.createdAt
+      })
+      .eq('id', updatedItem.id);
+
+    if (error) {
+      console.error('Error updating item:', error);
+      alert('Error updating item in Supabase');
+    } else {
+      setItems(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+    }
   };
 
-  const handleDeleteItem = (id: string) => {
+  const handleDeleteItem = async (id: string) => {
     if (window.confirm(t.confirmDelete)) {
-      setItems(prev => prev.filter(item => item.id !== id));
+      if (!isSupabaseConfigured || !supabase) return;
+
+      const { error } = await supabase
+        .from('inventory_items')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting item:', error);
+        alert('Error deleting item from Supabase');
+      } else {
+        setItems(prev => prev.filter(item => item.id !== id));
+      }
     }
   };
 
@@ -110,9 +181,35 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main>
-        <AnimatePresence mode="wait">
-          {activeTab === 'home' && (
+      <main className="min-h-[400px]">
+        {!isSupabaseConfigured && (
+          <div className="max-w-2xl mx-auto mb-8 p-6 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-4">
+            <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
+              <Languages className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-amber-900 uppercase tracking-widest mb-1">
+                {lang === 'pt' ? 'Configuração Pendente' : 'Configuration Pending'}
+              </h3>
+              <p className="text-sm text-amber-700 leading-relaxed">
+                {lang === 'pt' 
+                  ? 'Para salvar os dados no banco de dados, você precisa configurar as chaves VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no painel de Secrets.' 
+                  : 'To save data to the database, you need to configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in the Secrets panel.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+            <p className="text-blue-400 font-bold uppercase tracking-widest text-xs">
+              {lang === 'pt' ? 'Carregando dados...' : 'Loading data...'}
+            </p>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {activeTab === 'home' && (
             <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
@@ -272,6 +369,7 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* Bottom Navigation */}
