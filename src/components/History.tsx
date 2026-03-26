@@ -131,16 +131,22 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredItems.map((item) => (
               <div key={item.id} className="glass-card p-5 rounded-2xl hover:shadow-2xl transition-all duration-300 group border-l-4 border-l-blue-500 relative">
-                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-4 right-4 flex gap-2">
                   <button 
                     onClick={() => setEditingItem(item)}
-                    className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors"
+                    className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
+                    title={t.edit}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
-                    onClick={() => onDelete(item.id)}
-                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                    onClick={() => {
+                      if (window.confirm(t.confirmDelete)) {
+                        onDelete(item.id);
+                      }
+                    }}
+                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors shadow-sm"
+                    title={t.delete}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -216,6 +222,16 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
                     className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                     value={editingItem.category}
                     onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.date}</label>
+                  <input
+                    type="datetime-local"
+                    className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={format(new Date(editingItem.createdAt), "yyyy-MM-dd'T'HH:mm")}
+                    onChange={(e) => setEditingItem({ ...editingItem, createdAt: new Date(e.target.value).getTime() })}
                     required
                   />
                 </div>

@@ -40,6 +40,7 @@ export const translations = {
     reportTitle: "Relatório de Estoque - Aidan.SS",
     generatedAt: "Gerado em",
     date: "Data",
+    edit: "Editar",
     delete: "Excluir",
     confirmDelete: "Tem certeza que deseja excluir este item?",
   },
@@ -84,6 +85,7 @@ export const translations = {
     reportTitle: "Stock Report - Aidan.SS",
     generatedAt: "Generated at",
     date: "Date",
+    edit: "Edit",
     delete: "Delete",
     confirmDelete: "Are you sure you want to delete this item?",
   }

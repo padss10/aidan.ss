@@ -1,20 +1,64 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Aidan.SS - Gestão de Estoque
 
-# Run and deploy your AI Studio app
+Aplicativo de leitura de código e gerenciamento de estoque com dashboard e busca avançada.
 
-This contains everything you need to run your app locally.
+## Funcionalidades
 
-View your app in AI Studio: https://ai.studio/apps/1b645f2d-07ca-48f4-9f95-10a09cdf8202
+- **Leitura de Código:** Use a câmera para ler códigos QR ou de barras.
+- **Gestão de Itens:** Adicione, edite e exclua itens do estoque com nome, categoria e código.
+- **Busca Avançada:** Filtre itens por nome, código, categoria e intervalo de datas.
+- **Dashboard:** Visualize estatísticas do seu estoque com gráficos dinâmicos.
+- **Exportação:** Exporte relatórios em CSV ou PDF.
+- **Multilíngue:** Suporte para Português e Inglês.
+- **Modo Offline:** Funciona com armazenamento local (LocalStorage).
 
-## Run Locally
+## Como rodar localmente
 
-**Prerequisites:**  Node.js
+Este projeto foi construído com React, Vite e Tailwind CSS.
 
+### Pré-requisitos
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Node.js (v18 ou superior)
+- npm ou yarn
+
+### Instalação
+
+1. Clone o repositório (após exportar do AI Studio):
+   ```bash
+   git clone <url-do-seu-repositorio>
+   cd aidan-ss
+   ```
+
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+4. Abra o navegador em `http://localhost:3000`.
+
+## Tecnologias Utilizadas
+
+- **React 19**
+- **Vite**
+- **Tailwind CSS 4**
+- **Lucide React** (Ícones)
+- **Motion** (Animações)
+- **Recharts** (Gráficos)
+- **jsPDF** (Exportação PDF)
+- **html5-qrcode** (Leitor de código)
+
+## Exportando para o GitHub
+
+Para levar este código para o seu GitHub:
+
+1. No **Google AI Studio Build**, clique no ícone de engrenagem (Configurações) no canto superior direito.
+2. Selecione a opção **"Export to GitHub"**.
+3. Siga as instruções para conectar sua conta e criar um novo repositório.
+
+---
+Desenvolvido com ❤️ no Google AI Studio Build.
