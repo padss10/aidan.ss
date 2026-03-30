@@ -24,7 +24,8 @@ export function Dashboard({ items, lang }: DashboardProps) {
   const categoryData = useMemo(() => {
     const counts: Record<string, number> = {};
     items.forEach(item => {
-      counts[item.category] = (counts[item.category] || 0) + 1;
+      const cat = item.category || 'N/A';
+      counts[cat] = (counts[cat] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([name, value]) => ({ name, value }))
@@ -60,11 +61,11 @@ export function Dashboard({ items, lang }: DashboardProps) {
   ];
 
   const exportToCSV = () => {
-    const headers = ['ID', t.code, t.name, t.category, t.date];
+    const headers = ['ID', t.code, t.description, t.category, t.date];
     const rows = items.map(item => [
       item.id,
       item.code,
-      item.name,
+      item.description,
       item.category,
       format(item.createdAt, 'dd/MM/yyyy HH:mm')
     ]);
@@ -98,10 +99,10 @@ export function Dashboard({ items, lang }: DashboardProps) {
 
     autoTable(doc, {
       startY: 45,
-      head: [[t.code, t.name, t.category, t.date]],
+      head: [[t.code, t.description, t.category, t.date]],
       body: items.map(item => [
         item.code,
-        item.name,
+        item.description,
         item.category,
         format(item.createdAt, 'dd/MM/yyyy')
       ]),

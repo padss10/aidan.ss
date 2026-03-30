@@ -29,8 +29,8 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.code.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (item.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (item.code || '').toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === '' || item.category === categoryFilter;
       
       let matchesDate = true;
@@ -63,7 +63,7 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-blue-700 uppercase tracking-wider">{t.nameOrCode}</label>
+            <label className="text-xs font-semibold text-blue-700 uppercase tracking-wider">{t.descriptionOrCode}</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400" />
               <input
@@ -161,11 +161,15 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
                     </div>
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-blue-900 mb-1">{item.name}</h3>
+                <h3 className="text-lg font-bold text-blue-900 mb-1">{item.description}</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-blue-600">
                     <Tag className="w-4 h-4" />
                     <span>{item.category}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[10px] font-medium text-blue-400">
+                    <span>{t.unit}: {item.unit}</span>
+                    <span>{t.weight}: {item.weight}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm font-mono text-blue-500 bg-blue-50/50 p-2 rounded-md">
                     <Hash className="w-4 h-4" />
@@ -186,7 +190,7 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="glass-card w-full max-w-md p-8 rounded-[2rem] shadow-2xl"
+              className="glass-card w-full max-w-2xl p-8 rounded-[2rem] shadow-2xl max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-blue-900">{t.editItem}</h3>
@@ -195,46 +199,195 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveEdit} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.code}</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={editingItem.code}
-                    onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                    required
-                  />
+              <form onSubmit={handleSaveEdit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.code}</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={editingItem.code}
+                      onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.description}</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={editingItem.description}
+                      onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.name}</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={editingItem.name}
-                    onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                    required
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.category}</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={editingItem.category}
+                      onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.date}</label>
+                    <input
+                      type="datetime-local"
+                      className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={format(new Date(editingItem.createdAt), "yyyy-MM-dd'T'HH:mm")}
+                      onChange={(e) => setEditingItem({ ...editingItem, createdAt: new Date(e.target.value).getTime() })}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.category}</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={editingItem.category}
-                    onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                    required
-                  />
+
+                <div className="border-t border-blue-50 pt-4">
+                  <h4 className="text-xs font-black text-blue-300 uppercase tracking-[0.2em] mb-4">{lang === 'pt' ? 'Dimensões e Identificação' : 'Dimensions & Identification'}</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.unit}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.unit}
+                        onChange={(e) => setEditingItem({ ...editingItem, unit: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.weight}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.weight}
+                        onChange={(e) => setEditingItem({ ...editingItem, weight: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.ean}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.ean}
+                        onChange={(e) => setEditingItem({ ...editingItem, ean: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.dun}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.dun}
+                        onChange={(e) => setEditingItem({ ...editingItem, dun: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.length}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.length}
+                        onChange={(e) => setEditingItem({ ...editingItem, length: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.width}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.width}
+                        onChange={(e) => setEditingItem({ ...editingItem, width: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.height}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.height}
+                        onChange={(e) => setEditingItem({ ...editingItem, height: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.date}</label>
-                  <input
-                    type="datetime-local"
-                    className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={format(new Date(editingItem.createdAt), "yyyy-MM-dd'T'HH:mm")}
-                    onChange={(e) => setEditingItem({ ...editingItem, createdAt: new Date(e.target.value).getTime() })}
-                    required
-                  />
+
+                <div className="border-t border-blue-50 pt-4">
+                  <h4 className="text-xs font-black text-blue-300 uppercase tracking-[0.2em] mb-4">{lang === 'pt' ? 'Informações de Movimentação' : 'Movement Information'}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.nfe}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.nfe}
+                        onChange={(e) => setEditingItem({ ...editingItem, nfe: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.orderNumber}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.orderNumber}
+                        onChange={(e) => setEditingItem({ ...editingItem, orderNumber: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.quantity}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.quantity}
+                        onChange={(e) => setEditingItem({ ...editingItem, quantity: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.totalValue}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.totalValue}
+                        onChange={(e) => setEditingItem({ ...editingItem, totalValue: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.seal}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.seal}
+                        onChange={(e) => setEditingItem({ ...editingItem, seal: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.requester}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.requester}
+                        onChange={(e) => setEditingItem({ ...editingItem, requester: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1">{t.supplier}</label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={editingItem.supplier}
+                        onChange={(e) => setEditingItem({ ...editingItem, supplier: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex gap-3 pt-4">

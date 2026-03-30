@@ -21,8 +21,22 @@ export default function App() {
   const [lang, setLang] = useState<Language>('pt');
   const [newItem, setNewItem] = useState({
     code: '',
-    name: '',
-    category: ''
+    description: '',
+    category: '',
+    unit: '',
+    length: '',
+    width: '',
+    height: '',
+    weight: '',
+    ean: '',
+    dun: '',
+    nfe: '',
+    quantity: '',
+    totalValue: '',
+    orderNumber: '',
+    requester: '',
+    supplier: '',
+    seal: ''
   });
 
   const t = translations[lang];
@@ -48,8 +62,22 @@ export default function App() {
         const mappedItems: InventoryItem[] = data.map(item => ({
           id: item.id,
           code: item.code,
-          name: item.name,
+          description: item.description || item.name || '',
           category: item.category,
+          unit: item.unit || '',
+          length: item.length || '',
+          width: item.width || '',
+          height: item.height || '',
+          weight: item.weight || '',
+          ean: item.ean || '',
+          dun: item.dun || '',
+          nfe: item.nfe || '',
+          quantity: item.quantity || '',
+          totalValue: item.total_value || '',
+          orderNumber: item.order_number || '',
+          requester: item.requester || '',
+          supplier: item.supplier || '',
+          seal: item.seal || '',
           createdAt: item.created_at
         }));
         setItems(mappedItems);
@@ -71,7 +99,7 @@ export default function App() {
 
   const handleAddItem = async (e?: FormEvent) => {
     if (e) e.preventDefault();
-    if (!newItem.code || !newItem.name || !newItem.category) return;
+    if (!newItem.code || !newItem.description || !newItem.category) return;
 
     if (!isSupabaseConfigured || !supabase) {
       alert(lang === 'pt' ? 'Supabase não configurado. Verifique as chaves no painel Secrets.' : 'Supabase not configured. Check keys in the Secrets panel.');
@@ -83,8 +111,22 @@ export default function App() {
       .insert([
         { 
           code: newItem.code, 
-          name: newItem.name, 
+          description: newItem.description, 
           category: newItem.category,
+          unit: newItem.unit,
+          length: newItem.length,
+          width: newItem.width,
+          height: newItem.height,
+          weight: newItem.weight,
+          ean: newItem.ean,
+          dun: newItem.dun,
+          nfe: newItem.nfe,
+          quantity: newItem.quantity,
+          total_value: newItem.totalValue,
+          order_number: newItem.orderNumber,
+          requester: newItem.requester,
+          supplier: newItem.supplier,
+          seal: newItem.seal,
           created_at: Date.now()
         }
       ])
@@ -97,12 +139,44 @@ export default function App() {
       const item: InventoryItem = {
         id: data[0].id,
         code: data[0].code,
-        name: data[0].name,
+        description: data[0].description,
         category: data[0].category,
+        unit: data[0].unit,
+        length: data[0].length,
+        width: data[0].width,
+        height: data[0].height,
+        weight: data[0].weight,
+        ean: data[0].ean,
+        dun: data[0].dun,
+        nfe: data[0].nfe,
+        quantity: data[0].quantity,
+        totalValue: data[0].total_value,
+        orderNumber: data[0].order_number,
+        requester: data[0].requester,
+        supplier: data[0].supplier,
+        seal: data[0].seal,
         createdAt: data[0].created_at
       };
       setItems(prev => [item, ...prev]);
-      setNewItem({ code: '', name: '', category: '' });
+      setNewItem({ 
+        code: '', 
+        description: '', 
+        category: '',
+        unit: '',
+        length: '',
+        width: '',
+        height: '',
+        weight: '',
+        ean: '',
+        dun: '',
+        nfe: '',
+        quantity: '',
+        totalValue: '',
+        orderNumber: '',
+        requester: '',
+        supplier: '',
+        seal: ''
+      });
       setIsScanning(false);
     }
   };
@@ -114,8 +188,22 @@ export default function App() {
       .from('inventory_items')
       .update({
         code: updatedItem.code,
-        name: updatedItem.name,
+        description: updatedItem.description,
         category: updatedItem.category,
+        unit: updatedItem.unit,
+        length: updatedItem.length,
+        width: updatedItem.width,
+        height: updatedItem.height,
+        weight: updatedItem.weight,
+        ean: updatedItem.ean,
+        dun: updatedItem.dun,
+        nfe: updatedItem.nfe,
+        quantity: updatedItem.quantity,
+        total_value: updatedItem.totalValue,
+        order_number: updatedItem.orderNumber,
+        requester: updatedItem.requester,
+        supplier: updatedItem.supplier,
+        seal: updatedItem.seal,
         created_at: updatedItem.createdAt
       })
       .eq('id', updatedItem.id);
@@ -264,37 +352,113 @@ export default function App() {
                     </motion.div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.itemName}</label>
-                      <div className="relative">
-                        <Package className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.description}</label>
+                        <div className="relative">
+                          <Package className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+                          <input
+                            type="text"
+                            placeholder={t.descriptionPlaceholder}
+                            className="w-full pl-12 pr-4 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-blue-900 font-medium"
+                            value={newItem.description}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.category}</label>
+                        <div className="relative">
+                          <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+                          <input
+                            type="text"
+                            placeholder={t.categoryPlaceholder}
+                            className="w-full pl-12 pr-4 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-blue-900 font-medium"
+                            value={newItem.category}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.unit}</label>
                         <input
                           type="text"
-                          placeholder={t.itemNamePlaceholder}
-                          className="w-full pl-12 pr-4 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-blue-900 font-medium"
-                          value={newItem.name}
-                          onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
-                          required
+                          placeholder={t.unitPlaceholder}
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.unit}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, unit: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.weight}</label>
+                        <input
+                          type="text"
+                          placeholder="0.00kg"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.weight}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, weight: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.ean}</label>
+                        <input
+                          type="text"
+                          placeholder="EAN-13"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.ean}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, ean: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.dun}</label>
+                        <input
+                          type="text"
+                          placeholder="DUN-14"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.dun}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, dun: e.target.value }))}
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.category}</label>
-                      <div className="relative">
-                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.length}</label>
                         <input
                           type="text"
-                          placeholder={t.categoryPlaceholder}
-                          className="w-full pl-12 pr-4 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-blue-900 font-medium"
-                          value={newItem.category}
-                          onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
-                          required
+                          placeholder="0cm"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.length}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, length: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.width}</label>
+                        <input
+                          type="text"
+                          placeholder="0cm"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.width}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, width: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.height}</label>
+                        <input
+                          type="text"
+                          placeholder="0cm"
+                          className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                          value={newItem.height}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, height: e.target.value }))}
                         />
                       </div>
                     </div>
-                  </div>
 
                   <button
                     type="submit"
@@ -327,7 +491,7 @@ export default function App() {
                             <Package className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-blue-900 truncate">{item.name}</p>
+                            <p className="font-bold text-blue-900 truncate">{item.description}</p>
                             <p className="text-xs text-blue-400 truncate">{item.category}</p>
                           </div>
                         </div>
