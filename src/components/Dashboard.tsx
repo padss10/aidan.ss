@@ -61,17 +61,36 @@ export function Dashboard({ items, lang }: DashboardProps) {
   ];
 
   const exportToCSV = () => {
-    const headers = ['ID', t.code, t.description, t.category, t.date];
+    const headers = [
+      'ID', t.code, t.description, t.category, t.unit, 
+      t.weight, t.ean, t.dun, t.length, t.width, t.height,
+      t.nfe, t.quantity, t.totalValue, t.orderNumber, 
+      t.requester, t.supplier, t.seal, t.date
+    ];
     const rows = items.map(item => [
       item.id,
       item.code,
       item.description,
       item.category,
+      item.unit,
+      item.weight,
+      item.ean,
+      item.dun,
+      item.length,
+      item.width,
+      item.height,
+      item.nfe,
+      item.quantity,
+      item.totalValue,
+      item.orderNumber,
+      item.requester,
+      item.supplier,
+      item.seal,
       format(item.createdAt, 'dd/MM/yyyy HH:mm')
     ]);
 
     const csvContent = [headers, ...rows]
-      .map(e => e.join(","))
+      .map(e => e.map(val => `"${val || ''}"`).join(","))
       .join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -99,15 +118,18 @@ export function Dashboard({ items, lang }: DashboardProps) {
 
     autoTable(doc, {
       startY: 45,
-      head: [[t.code, t.description, t.category, t.date]],
+      head: [[t.code, t.description, t.category, t.quantity, t.totalValue, t.date]],
       body: items.map(item => [
         item.code,
         item.description,
         item.category,
+        item.quantity,
+        item.totalValue,
         format(item.createdAt, 'dd/MM/yyyy')
       ]),
       headStyles: { fillColor: [43, 108, 176] },
-      alternateRowStyles: { fillColor: [247, 250, 252] }
+      alternateRowStyles: { fillColor: [247, 250, 252] },
+      styles: { fontSize: 8 }
     });
 
     doc.save(`estoque_aidan_ss_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
