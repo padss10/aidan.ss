@@ -460,6 +460,85 @@ export default function App() {
                       </div>
                     </div>
 
+                    <div className="pt-4 border-t border-blue-50">
+                      <h3 className="text-xs font-black text-blue-300 uppercase tracking-[0.2em] mb-6">{lang === 'pt' ? 'Informações de Movimentação' : 'Movement Information'}</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.nfe}</label>
+                          <input
+                            type="text"
+                            placeholder="000.000.000"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.nfe}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, nfe: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.orderNumber}</label>
+                          <input
+                            type="text"
+                            placeholder="#0000"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.orderNumber}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, orderNumber: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mt-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.quantity}</label>
+                          <input
+                            type="text"
+                            placeholder="0"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.quantity}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, quantity: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.totalValue}</label>
+                          <input
+                            type="text"
+                            placeholder="R$ 0,00"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.totalValue}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, totalValue: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.requester}</label>
+                          <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.requester}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, requester: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.supplier}</label>
+                          <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.supplier}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, supplier: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">{t.seal}</label>
+                          <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-900 font-medium"
+                            value={newItem.seal}
+                            onChange={(e) => setNewItem(prev => ({ ...prev, seal: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                   <button
                     type="submit"
                     className="w-full py-5 gradient-bg text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-200 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"

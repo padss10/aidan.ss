@@ -167,9 +167,13 @@ export function History({ items, onUpdate, onDelete, lang }: HistoryProps) {
                     <Tag className="w-4 h-4" />
                     <span>{item.category}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-[10px] font-medium text-blue-400">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px] font-medium text-blue-400">
                     <span>{t.unit}: {item.unit}</span>
                     <span>{t.weight}: {item.weight}</span>
+                    {item.quantity && <span>{t.quantity}: {item.quantity}</span>}
+                    {item.totalValue && <span>{t.totalValue}: {item.totalValue}</span>}
+                    {item.nfe && <span>{t.nfe}: {item.nfe}</span>}
+                    {item.orderNumber && <span>{t.orderNumber}: {item.orderNumber}</span>}
                   </div>
                   <div className="flex items-center gap-2 text-sm font-mono text-blue-500 bg-blue-50/50 p-2 rounded-md">
                     <Hash className="w-4 h-4" />
